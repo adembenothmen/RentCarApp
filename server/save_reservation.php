@@ -56,6 +56,11 @@ $totalPrice = $days * $pricePerDay;
 
 $reservationNumber = 'RES-' . date('YmdHis') . '-' . random_int(1000, 9999);
 $timestamp = date('Y-m-d H:i:s');
+
+
+
+
+
 try {
     $db->beginTransaction();
 
@@ -65,6 +70,17 @@ try {
 
     if ($existingClient) {
         $clientId = (int)$existingClient['id'];
+        
+        // Update client info if any details changed
+        $updateClientSql = 'UPDATE clients SET name = :name, email = :email, phone = :phone WHERE id = :id';
+        $updateClientStmt = $db->prepare($updateClientSql);
+        $updateClientStmt->execute([
+            'name' => $name,
+            'email' => $email,
+            'phone' => $phone,
+            'id' => $clientId,
+        ]);
+
     } else {
         $insertClientSql = 'INSERT INTO clients (name,email,phone,cin,created_at
         ) VALUES (
