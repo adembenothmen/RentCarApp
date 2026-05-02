@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Cental - Cars</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
+    <div class="container-fluid topbar bg-secondary d-none d-xl-block w-100">
+        <div class="container">
+            <div class="row gx-0 align-items-center" style="height: 45px;">
+                <div class="col-lg-6 text-center text-lg-start mb-lg-0">
+                    <div class="d-flex flex-wrap">
+                        <a href="tel:+21651709971" class="text-muted me-4"><i class="fas fa-phone-alt text-primary me-2"></i>+216 51 709 971</a>
+                        <a href="mailto:benothmenneadem@gmail.com" class="text-muted me-0"><i class="fas fa-envelope text-primary me-2"></i>benothmenneadem@gmail.com</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid nav-bar sticky-top px-0 px-lg-4 py-2 py-lg-0">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <a href="home.html" class="navbar-brand p-0">
+                    <h1 class="display-6 text-primary"><i class="fas fa-car-alt me-3"></i>Cental</h1>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                    <span class="fa fa-bars"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <div class="navbar-nav mx-auto py-0">
+                        <a href="home.html" class="nav-item nav-link">Home</a>
+                        <a href="cars.html" class="nav-item nav-link active">Cars</a>
+                    </div>
+                    <a href="dashboard.html" class="btn btn-outline-dark rounded-pill py-2 px-4 me-2">Dashboard</a>
+                   
+            </nav>
+        </div>
+    </div>
+
+    <div class="container-fluid bg-breadcrumb mb-5">
+        <div class="container text-center py-5" style="max-width: 900px;">
+            <h4 class="text-white display-4 mb-4 wow fadeInDown" data-wow-delay="0.1s">Available Cars</h4>
+            <ol class="breadcrumb d-flex justify-content-center mb-0 wow fadeInDown" data-wow-delay="0.3s">
+                <li class="breadcrumb-item"><a href="home.html">Home</a></li>
+                <li class="breadcrumb-item active text-primary">Cars</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="container-fluid categories py-5">
+        <div class="container">
+            <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 800px;">
+                <h1 class="display-5 text-capitalize mb-3">Our <span class="text-primary">Cars</span></h1>
+                <p class="mb-0">Choose your model and continue to booking in one click.</p>
+            </div>
+            <div class="d-flex flex-wrap justify-content-center gap-2 mb-4" id="typeFilters">
+                <a href="cars.html?type=all" data-filter-type="all" class="btn btn-outline-primary rounded-pill px-4">All</a>
+                <a href="cars.html?type=Sedan" data-filter-type="Sedan" class="btn btn-outline-primary rounded-pill px-4">Sedan</a>
+                <a href="cars.html?type=SUV" data-filter-type="SUV" class="btn btn-outline-primary rounded-pill px-4">SUV</a>
+                <a href="cars.html?type=Electric" data-filter-type="Electric" class="btn btn-outline-primary rounded-pill px-4">Electric</a>
+                <a href="cars.html?type=Luxury" data-filter-type="Luxury" class="btn btn-outline-primary rounded-pill px-4">Luxury</a>
+            </div>
+            <div id="cars-grid" class="row g-4"></div>
+            <div id="cars-message" class="text-center mt-3"></div>
+        </div>
+    </div>
+
+    <div class="container-fluid footer py-5 mt-5 wow fadeIn" data-wow-delay="0.2s">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-md-6 col-lg-6 col-xl-4">
+                    <div class="footer-item d-flex flex-column">
+                        <h4 class="text-white mb-4">About Us</h4>
+                        <p class="mb-3">Fast and reliable daily rentals with clear pricing.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-6 col-xl-4">
+                    <div class="footer-item d-flex flex-column">
+                        <h4 class="text-white mb-4">Quick Links</h4>
+                        <a href="home.html"><i class="fas fa-angle-right me-2"></i> Home</a>
+                        <a href="cars.html"><i class="fas fa-angle-right me-2"></i> Cars</a>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-6 col-xl-4">
+                    <div class="footer-item d-flex flex-column">
+                        <h4 class="text-white mb-4">Contact</h4>
+                        <a href="mailto:benothmenneadem@gmail.com"><i class="fas fa-envelope me-2"></i> benothmenneadem@gmail.com</a>
+                        <a href="tel:+21651709971"><i class="fas fa-phone me-2"></i> +216 51 709 971</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/site.js"></script>
+    <script src="js/main.js"></script>
+
+    
+    <script>
+        (function () {
+            const filters = document.querySelectorAll('[data-filter-type]');
+            const carsGrid = document.getElementById('cars-grid');
+            const message = document.getElementById('cars-message');
+            const currentUrl = new URL(window.location.href);
+            const selectedType = currentUrl.searchParams.get('type') || 'all';
+
+            function setActiveFilter(type) {
+                filters.forEach(function (filter) {
+                    const isActive = filter.dataset.filterType === type;
+                    filter.classList.toggle('btn-primary', isActive);
+                    filter.classList.toggle('btn-outline-primary', !isActive);
+                });
+            }
+
+            async function loadCars(type) {
+                const requestUrl = new URL('../server/cars.php', window.location.href);
+                if (type && type !== 'all') {
+                    requestUrl.searchParams.set('type', type);
+                }
+
+                const response = await fetch(requestUrl.toString());
+                const data = await response.json();
+
+                if (!data.success || !Array.isArray(data.cars)) {
+                    carsGrid.innerHTML = '';
+                    message.innerHTML = CentalApp.renderAlert('danger', 'Unable to load cars right now.');
+                    return;
+                }
+
+                carsGrid.innerHTML = data.cars.map(function (car, index) {
+                    return CentalApp.renderCarCard(car, 'booking.html?car=' + encodeURIComponent(car.id), index);
+                }).join('');
+                
+                message.innerHTML = data.cars.length === 0 ? CentalApp.renderAlert('secondary', 'No cars found for this type.') : '';
+                setActiveFilter(type);
+                history.replaceState({}, '', type === 'all' ? 'cars.html' : 'cars.html?type=' + encodeURIComponent(type));
+            }
+
+            filters.forEach(function (filter) {
+                filter.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    loadCars(this.dataset.filterType);
+                });
+            });
+
+            loadCars(selectedType);
+        })();
+    </script>
+</body>
+</html>

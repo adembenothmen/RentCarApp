@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Admin Dashboard - Cental</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/dashboard.css" rel="stylesheet">
+   
+</head>
+<body>
+    <header class="admin-topbar py-4 mb-4">
+        <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <p class="text-uppercase small mb-1 text-white-50">Cental Admin</p>
+                <h1 class="h3 mb-0">Manage Reservations</h1>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span id="adminUser" class="badge bg-light text-dark rounded-pill px-3 py-2">Logged in as admin</span>
+                <a href="../server/admin_auth.php?action=logout" class="btn btn-outline-light rounded-pill px-4">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container pb-5">
+        <div id="flashBox" class="alert alert-info d-none shadow-sm" role="alert"></div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card summary-card h-100">
+                    <div class="card-body p-4">
+                        <p class="text-muted mb-1">Total Reservations</p>
+                        <h2 id="totalReservationsCount" class="display-6 mb-0">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card summary-card h-100">
+                    <div class="card-body p-4">
+                        <p class="text-muted mb-1">Pending Reservations</p>
+                        <h2 id="pendingReservationsCount" class="display-6 mb-0">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card summary-card h-100">
+                    <div class="card-body p-4">
+                        <p class="text-muted mb-1">Confirmed Reservations</p>
+                        <h2 id="confirmedReservationsCount" class="display-6 mb-0">0</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card panel-card">
+            <div class="card-body p-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-start mb-3 gap-3">
+                    <div>
+                        <h2 class="h4 mb-1">Reservations</h2>
+                        <p class="text-muted mb-0">Search by client name, then filter the list without losing your place.</p>
+                    </div>
+                    <div class="d-flex gap-2 flex-wrap align-items-center">
+                        <div class="input-group input-group-sm search-chip">
+                            <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
+                            <input id="searchClientName" class="form-control" placeholder="Search client name" />
+                        </div>
+                        <select id="filterStatus" class="form-select form-select-sm filter-chip">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                        </select>
+                        <select id="dateOrder" class="form-select form-select-sm filter-chip">
+                            <option value="nearest">Nearest First</option>
+                            <option value="latest">Latest First</option>
+                        </select>
+                        <button id="clearFiltersBtn" type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3">Reset</button>
+                    </div>
+                </div>
+                <div class="table-responsive reservations-scroll">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Reservation_Number</th>
+                                <th>Car</th>
+                                <th>Dates</th>
+                                <th>Days</th>
+                                <th>Payment</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Client</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reservationsBody">
+                            <tr><td colspan="9" class="text-center text-muted py-4">Loading reservations...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="clientModal" class="client-modal-overlay d-none" role="dialog" aria-modal="true" aria-labelledby="clientModalTitle">
+        <div class="client-modal-card">
+            <div class="client-modal-header d-flex justify-content-between align-items-center">
+                <h3 id="clientModalTitle" class="h5 mb-0">Client Details</h3>
+                <button type="button" id="closeClientModalTop" class="btn btn-sm btn-outline-light rounded-pill">Close</button>
+            </div>
+            <div class="client-modal-body">
+                <div class="client-grid mb-4">
+                    <div><strong>Name:</strong> <span id="modalClientName">-</span></div>
+                    <div><strong>Email:</strong> <span id="modalClientEmail">-</span></div>
+                    <div><strong>Phone:</strong> <span id="modalClientPhone">-</span></div>
+                    <div><strong>CIN:</strong> <span id="modalClientCin">-</span></div>
+                    
+                </div>
+                <div class="text-end">
+                    <button type="button" id="closeClientModalBottom" class="btn btn-primary rounded-pill px-4">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modifyModal" class="client-modal-overlay d-none" role="dialog" aria-modal="true" aria-labelledby="modifyModalTitle">
+        <div class="client-modal-card">
+            <div class="client-modal-header d-flex justify-content-between align-items-center">
+                <h3 id="modifyModalTitle" class="h5 mb-0">Modify Reservation</h3>
+                <button type="button" id="closeModifyModalTop" class="btn btn-sm btn-outline-light rounded-pill">Close</button>
+            </div>
+            <div class="client-modal-body">
+                <form id="modifyForm">
+                    <input type="hidden" id="modifyReservationId">
+                    <div class="mb-3">
+                        <label for="modifyStartDate" class="form-label">Start Date</label>
+                        <input type="date" id="modifyStartDate" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modifyEndDate" class="form-label">End Date</label>
+                        <input type="date" id="modifyEndDate" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modifyPaymentMethod" class="form-label">Payment Method</label>
+                        <select id="modifyPaymentMethod" class="form-select" required>
+                            <option value="">Select payment method</option>
+                            <option value="cash">Cash</option>
+                            <option value="credit-card">Credit Card</option>
+                            <option value="bank-transfer">Bank Transfer</option>
+                        </select>
+                    </div>
+                    <div class="text-end d-flex justify-content-end gap-2">
+                        <button type="button" id="closeModifyModalBottom" class="btn btn-outline-secondary rounded-pill px-4">Cancel</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="client-modal-overlay d-none" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+        <div class="client-modal-card confirm-card">
+            <div class="client-modal-header d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="text-uppercase small mb-1 text-white-50">Please confirm</p>
+                    <h3 id="confirmModalTitle" class="h5 mb-0">Confirm action</h3>
+                </div>
+                <button type="button" id="closeConfirmModalTop" class="btn btn-sm btn-outline-light rounded-pill">Close</button>
+            </div>
+            <div class="client-modal-body">
+                <p id="confirmModalBody" class="mb-4 text-muted">Are you sure you want to continue?</p>
+                <div class="text-end d-flex justify-content-end gap-2">
+                    <button type="button" id="cancelConfirmAction" class="btn btn-outline-secondary rounded-pill px-4">Cancel</button>
+                    <button type="button" id="confirmActionButton" class="btn btn-danger rounded-pill px-4">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+        <div id="actionToast" class="toast border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2500">
+            <div class="toast-header border-0 text-white" id="actionToastHeader">
+                <strong class="me-auto">Reservation Manager</strong>
+                <small>Just now</small>
+                <button type="button" class="btn-close btn-close-white ms-2 mb-1" id="closeToastButton" aria-label="Close"></button>
+            </div>
+            <div id="actionToastBody" class="toast-body bg-white"></div>
+        </div>
+    </div>
+
+
+
+    <script>
+        const flashBox = document.getElementById('flashBox');
+
+        const reservationsBody = document.getElementById('reservationsBody');
+        const filterStatus = document.getElementById('filterStatus');
+        const dateOrder = document.getElementById('dateOrder');
+        const searchClientName = document.getElementById('searchClientName');
+        const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+
+        const clientModal = document.getElementById('clientModal');
+        const modalClientName = document.getElementById('modalClientName');
+        const modalClientEmail = document.getElementById('modalClientEmail');
+        const modalClientPhone = document.getElementById('modalClientPhone');
+        const modalClientCin = document.getElementById('modalClientCin');
+      
+
+        const modifyModal = document.getElementById('modifyModal');
+        const modifyForm = document.getElementById('modifyForm');
+        const modifyReservationId = document.getElementById('modifyReservationId');
+        const modifyStartDate = document.getElementById('modifyStartDate');
+        const modifyEndDate = document.getElementById('modifyEndDate');
+        const modifyPaymentMethod = document.getElementById('modifyPaymentMethod');
+        const confirmModal = document.getElementById('confirmModal');
+        const confirmModalTitle = document.getElementById('confirmModalTitle');
+        const confirmModalBody = document.getElementById('confirmModalBody');
+        const confirmActionButton = document.getElementById('confirmActionButton');
+        const closeConfirmModalTop = document.getElementById('closeConfirmModalTop');
+        const cancelConfirmAction = document.getElementById('cancelConfirmAction');
+        const actionToast = document.getElementById('actionToast');
+        const actionToastHeader = document.getElementById('actionToastHeader');
+        const actionToastBody = document.getElementById('actionToastBody');
+        const closeToastButton = document.getElementById('closeToastButton');
+
+        let pendingAction = null;
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function showFlash(message, type) {
+            flashBox.className = 'alert alert-' + (type || 'info');
+            flashBox.textContent = message;
+            flashBox.classList.remove('d-none');
+        }
+
+        function hideFlash() {
+            flashBox.classList.add('d-none');
+            flashBox.textContent = '';
+        }
+
+        function showToast(message, type) {
+            const toastType = type || 'primary';
+            actionToast.className = 'toast border-0 shadow-lg bg-' + toastType;
+            actionToastBody.className = 'toast-body bg-' + toastType + ' text-white';
+            actionToastHeader.className = 'toast-header border-0 bg-' + toastType + ' text-white';
+            actionToastBody.textContent = message;
+            actionToast.classList.add('show');
+            clearTimeout(showToast.hideTimer);
+            showToast.hideTimer = setTimeout(function () {
+                actionToast.classList.remove('show');
+            }, 2500);
+        }
+
+        function openConfirmModal(options) {
+            pendingAction = options;
+            confirmModalTitle.textContent = options.title || 'Confirm action';
+            confirmModalBody.textContent = options.message || 'Are you sure you want to continue?';
+            confirmActionButton.textContent = options.confirmLabel || 'Confirm';
+            confirmActionButton.className = 'btn rounded-pill px-4 ' + (options.confirmClass || 'btn-danger');
+            confirmModal.classList.remove('d-none');
+        }
+
+        function closeConfirmModal() {
+            pendingAction = null;
+            confirmModal.classList.add('d-none');
+        }
+
+        async function loadDashboard() {
+            hideFlash();
+            // Get filter values from the dropdowns
+            const status = filterStatus.value;
+            const dateSort = dateOrder.value;
+            const search = (searchClientName && searchClientName.value) ? searchClientName.value.trim() : '';
+            
+            // Build query parameters
+            const params = new URLSearchParams();
+            if (status) params.append('filter_status', status);
+            if (dateSort) params.append('date_order', dateSort);
+            if (search) params.append('search', search);
+            
+            // Add parameters to URL if they exist
+            const url = params.toString() 
+                ? '../server/admin_dashboard.php?' + params.toString()
+                : '../server/admin_dashboard.php';
+            
+            const response = await fetch(url, { credentials: 'same-origin' });
+
+            if (!response.ok) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const data = await response.json();
+            if (!data.success) {
+                showFlash(data.message || 'Unable to load dashboard.', 'danger');
+                return;
+            }
+
+            document.getElementById('adminUser').textContent = 'Logged in as ' + (data.username || 'admin');
+            document.getElementById('totalReservationsCount').textContent = data.counts.total_reservations;
+            document.getElementById('pendingReservationsCount').textContent = data.counts.pending_reservations;
+            document.getElementById('confirmedReservationsCount').textContent = data.counts.confirmed_reservations;
+
+            renderReservations(data.reservations || []);
+        }
+
+        function renderReservations(reservations) {
+            if (!reservations.length) {
+                reservationsBody.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4">No reservations found.</td></tr>';
+                return;
+            }
+
+            reservationsBody.innerHTML = reservations.map(function (reservation) {
+                const status = String(reservation.status || 'pending').toLowerCase();
+                const statusBadge = status === 'confirmed'
+                    ? '<span class="badge bg-success">Confirmed</span>'
+                    : '<span class="badge bg-warning text-dark">Pending</span>';
+                const confirmButton = status === 'pending'
+                    ? '<button type="button" class="btn btn-sm btn-outline-success rounded-pill action-btn" data-action="confirm_reservation" data-id="' + escapeHtml(reservation.id) + '">Confirm</button>'
+                    : '';
+                const viewClientButton = '<button type="button" class="btn btn-sm btn-outline-primary rounded-pill client-col-btn" data-action="view_client" data-client-name="' + escapeHtml(reservation.client_name || 'Unknown') + '" data-client-email="' + escapeHtml(reservation.client_email || '-') + '" data-client-phone="' + escapeHtml(reservation.client_phone || '-') + '" data-client-cin="' + escapeHtml(reservation.client_cin || '-') + '" data-reservation-number="' + escapeHtml(reservation.reservation_number || '-') + '">View Client</button>';
+                const modifyButton = '<button type="button" class="btn btn-sm btn-outline-secondary rounded-pill action-btn" data-action="open_modify" data-id="' + escapeHtml(reservation.id) + '" data-start-date="' + escapeHtml(reservation.start_date) + '" data-end-date="' + escapeHtml(reservation.end_date) + '" data-payment-method="' + escapeHtml(reservation.payment_method || '') + '">Modify</button>';
+
+                return '<tr>' +
+                    '<td>' + escapeHtml(reservation.reservation_number) + '</td>' +
+                    '<td>' + escapeHtml(reservation.car_name || 'Unknown') + '</td>' +
+                    '<td><div>' + escapeHtml(reservation.start_date) + '</div><small class="text-muted">to ' + escapeHtml(reservation.end_date) + '</small></td>' +
+                    '<td>' + escapeHtml(reservation.days) + '</td>' +
+                    '<td class="text-capitalize">' + escapeHtml(String(reservation.payment_method || '').replace(/-/g, ' ')) + '</td>' +
+                    '<td>' + escapeHtml(Number(reservation.total_price || 0).toFixed(2)) + '</td>' +
+                    '<td>' + statusBadge + '</td>' +
+                    '<td>' + viewClientButton + '</td>' +
+                    '<td class="text-center action-cell"><div class="action-buttons">' +
+                        confirmButton +
+                        modifyButton +
+                        '<button type="button" class="btn btn-sm btn-outline-danger rounded-pill action-btn" data-action="delete_reservation" data-id="' + escapeHtml(reservation.id) + '">Delete</button>' +
+                    '</div></td>' +
+                '</tr>';
+            }).join('');
+        }
+
+        function openClientModal(button) {
+            modalClientName.textContent = button.getAttribute('data-client-name') || '-';
+            modalClientEmail.textContent = button.getAttribute('data-client-email') || '-';
+            modalClientPhone.textContent = button.getAttribute('data-client-phone') || '-';
+            modalClientCin.textContent = button.getAttribute('data-client-cin') || '-';
+            clientModal.classList.remove('d-none');
+        }
+
+        function closeClientModal() {
+            clientModal.classList.add('d-none');
+        }
+
+        function openModifyModal(button) {
+            modifyReservationId.value = button.getAttribute('data-id') || '';
+            modifyStartDate.value = button.getAttribute('data-start-date') || '';
+            modifyEndDate.value = button.getAttribute('data-end-date') || '';
+            modifyPaymentMethod.value = button.getAttribute('data-payment-method') || '';
+            modifyModal.classList.remove('d-none');
+        }
+
+        function closeModifyModal() {
+            modifyModal.classList.add('d-none');
+        }
+
+        async function deleteRecord(action, id) {
+            const confirmConfig = {
+                delete_reservation: {
+                    title: 'Delete reservation',
+                    message: 'This will permanently remove the reservation. Continue?',
+                    confirmLabel: 'Delete',
+                    confirmClass: 'btn-danger'
+                },
+                confirm_reservation: {
+                    title: 'Confirm reservation',
+                    message: 'Mark this reservation as confirmed?',
+                    confirmLabel: 'Confirm',
+                    confirmClass: 'btn-success'
+                }
+            }[action];
+
+            if (confirmConfig) {
+                openConfirmModal({
+                    title: confirmConfig.title,
+                    message: confirmConfig.message,
+                    confirmLabel: confirmConfig.confirmLabel,
+                    confirmClass: confirmConfig.confirmClass,
+                    action: action,
+                    id: id
+                });
+                return;
+            }
+
+            const body = new URLSearchParams();
+            body.set('action', action);
+            body.set('id', id);
+
+            const response = await fetch('../server/admin_dashboard.php', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body.toString()
+            });
+
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+                showFlash((data && data.message) || 'Action failed.', 'danger');
+                return;
+            }
+
+            showToast(data.message || 'Action completed.', 'success');
+            await loadDashboard();
+        }
+
+        async function runPendingAction() {
+            if (!pendingAction) {
+                closeConfirmModal();
+                return;
+            }
+
+            const body = new URLSearchParams();
+            body.set('action', pendingAction.action);
+            body.set('id', pendingAction.id);
+
+            const response = await fetch('../server/admin_dashboard.php', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body.toString()
+            });
+
+            const data = await response.json();
+            closeConfirmModal();
+
+            if (!response.ok || !data.success) {
+                showToast((data && data.message) || 'Action failed.', 'danger');
+                return;
+            }
+
+            showToast(data.message || 'Action completed.', 'success');
+            await loadDashboard();
+        }
+
+        
+
+        async function submitModifyReservation(event) {
+            event.preventDefault();
+
+            const id = modifyReservationId.value;
+            const startDate = modifyStartDate.value;
+            const endDate = modifyEndDate.value;
+            const paymentMethod = modifyPaymentMethod.value;
+
+            if (!id || !startDate || !endDate || !paymentMethod) {
+                showFlash('All modify fields are required.', 'danger');
+                return;
+            }
+
+            const body = new URLSearchParams();
+            body.set('action', 'modify_reservation');
+            body.set('id', id);
+            body.set('start_date', startDate);
+            body.set('end_date', endDate);
+            body.set('payment_method', paymentMethod);
+
+            const response = await fetch('../server/admin_dashboard.php', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body.toString()
+            });
+
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+                showToast((data && data.message) || 'Modify failed.', 'danger');
+                return;
+            }
+
+            closeModifyModal();
+            showToast(data.message || 'Reservation updated.', 'success');
+            await loadDashboard();
+        }
+
+        document.addEventListener('click', function (event) {
+            const button = event.target.closest('button[data-action][data-id]');
+            const modalButton = event.target.closest('button[data-action="view_client"]');
+            const modifyButton = event.target.closest('button[data-action="open_modify"]');
+            if (modalButton) {
+                openClientModal(modalButton);
+                return;
+            }
+
+            if (modifyButton) {
+                openModifyModal(modifyButton);
+                return;
+            }
+
+            if (!button) {
+                return;
+            }
+
+            deleteRecord(button.getAttribute('data-action'), button.getAttribute('data-id'));
+        });
+
+        confirmActionButton.addEventListener('click', runPendingAction);
+        closeConfirmModalTop.addEventListener('click', closeConfirmModal);
+        cancelConfirmAction.addEventListener('click', closeConfirmModal);
+        confirmModal.addEventListener('click', function (event) {
+            if (event.target === confirmModal) {
+                closeConfirmModal();
+            }
+        });
+
+        closeToastButton.addEventListener('click', function () {
+            actionToast.classList.remove('show');
+        });
+
+        document.getElementById('closeClientModalTop').addEventListener('click', closeClientModal);
+        document.getElementById('closeClientModalBottom').addEventListener('click', closeClientModal);
+        clientModal.addEventListener('click', function (event) {
+            if (event.target === clientModal) {
+                closeClientModal();
+            }
+        });
+
+        document.getElementById('closeModifyModalTop').addEventListener('click', closeModifyModal);
+        document.getElementById('closeModifyModalBottom').addEventListener('click', closeModifyModal);
+        modifyModal.addEventListener('click', function (event) {
+            if (event.target === modifyModal) {
+                closeModifyModal();
+            }
+        });
+        modifyForm.addEventListener('submit', submitModifyReservation);
+
+        // Reload data when filters change
+        filterStatus.addEventListener('change', loadDashboard);
+        dateOrder.addEventListener('change', loadDashboard);
+        // Debounce search input
+        function debounce(fn, delay) {
+            let t;
+            return function () {
+                const args = arguments;
+                clearTimeout(t);
+                t = setTimeout(function () { fn.apply(null, args); }, delay);
+            };
+        }
+
+        if (searchClientName) {
+            searchClientName.addEventListener('input', debounce(loadDashboard, 300));
+        }
+
+        clearFiltersBtn.addEventListener('click', function () {
+            searchClientName.value = '';
+            filterStatus.value = '';
+            dateOrder.value = 'nearest';
+            loadDashboard();
+        });
+
+        loadDashboard().catch(function () {
+            showFlash('Unable to load dashboard right now.', 'danger');
+        });
+    </script>
+
+
+</body>
+</html>

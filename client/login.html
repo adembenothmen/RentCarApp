@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Admin Login - Cental</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0b1320 0%, #1f2e4e 50%, #0f1728 100%);
+            font-family: 'Lato', sans-serif;
+        }
+        .admin-shell {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 16px;
+        }
+        .admin-card {
+            width: 100%;
+            max-width: 460px;
+            border: 0;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+        }
+        .admin-hero {
+            background: linear-gradient(135deg, rgba(13, 110, 253, 0.95), rgba(31, 46, 78, 0.96));
+            color: #fff;
+            padding: 28px;
+        }
+        .admin-form {
+            background: #fff;
+            padding: 28px;
+        }
+    </style>
+</head>
+<body>
+    <main class="admin-shell">
+        <div class="card admin-card">
+            <div class="admin-hero text-center">
+                <div class="mb-3">
+                    <i class="fas fa-user-shield fa-3x"></i>
+                </div>
+                <h1 class="h3 mb-2">Admin Login</h1>
+                <p class="mb-0">Access the dashboard to manage reservations.</p>
+            </div>
+            <div class="admin-form">
+                <div id="errorBox" class="alert alert-danger d-none" role="alert"></div>
+                <form method="post" action="../server/admin_auth.php">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control form-control-lg" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control form-control-lg" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill">Login</button>
+                </form>
+                <div class="text-center mt-3">
+                    <a href="home.html" class="text-decoration-none">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        (function () {
+            const params = new URLSearchParams(window.location.search);
+            const error = params.get('error');
+            const errorBox = document.getElementById('errorBox');
+            if (error) {
+                errorBox.textContent = error;
+                errorBox.classList.remove('d-none');
+            }
+        }());
+    </script>
+</body>
+</html>
